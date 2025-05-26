@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="100" viewBox="0 0 300 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&amp;display=swap');
+  </style>
+  <g>
+    <text x="10" y="65" font-family="Montserrat" font-size="80" font-weight="700" fill="#00A4A7">O</text>
+    <text x="85" y="65" font-family="Montserrat" font-size="65" font-weight="400" letter-spacing="2" fill="#00A4A7">LIVA</text>
+    <text x="10" y="90" font-family="Montserrat" font-size="16" font-weight="400" letter-spacing="4" fill="#666666">SKIN &amp; HAIR CLINIC</text>
+  </g>
+</svg> 

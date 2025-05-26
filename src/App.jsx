@@ -1,47 +1,63 @@
-import { useState } from 'react'
-import './App.css'
-import {Button} from "@/components/ui/button.jsx";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.jsx";
-import {Label} from "@/components/ui/label.jsx";
-import {Input} from "@/components/ui/input.jsx";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.jsx";
+import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { UserProvider } from "@/context/user-context.js"
+import { useEffect, useState } from "react"
+import { LoginForm } from "@/components/login-form.jsx"
+import InvoiceTable from "@/components/table.jsx"
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import Services from "@/components/services.jsx"
+import InvoiceTableProducts from "./components/table"
+import InvoiceTableServices from "./components/services-table"
+import AllInvoices from "./components/all"
+import Dashboard from "./components/Dashboard"
+import { Toaster } from "sonner"
 
-function App() {
+export default function App() {
+    const [username, setUsername] = useState(null);
+    const [currentInvoices, setCurrentInvoices] = useState([]);
+    const [centers, setCenters] = useState(() => {
+        try {
+            const storedCenters = localStorage.getItem('centers');
+            return storedCenters ? JSON.parse(storedCenters) : [];
+        } catch (error) {
+            console.error('Error parsing centers from localStorage:', error);
+            return [];
+        }
+    });
+    const [currentCenter, setCurrentCenter] = useState(null);
+
+    useEffect(() => {
+        if(localStorage.getItem('centers') !== null)
+            setUsername("yes");
+
+        if(centers.length > 0)
+            setCurrentCenter(centers[0]);
+    }, [centers]);
+
     return (
-        <Card className="w-[350px] mx-auto my-4">
-            <CardHeader>
-                <CardTitle>Sample Form</CardTitle>
-                <CardDescription>use this template</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="name">Name</Label>
-                            <Input id="name" placeholder="Name of your project" value='a template'/>
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="name">Email</Label>
-                            <Select>
-                                <SelectTrigger id="framework">
-                                    <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectItem value="he">rayimanoj8@gmail.com</SelectItem>
-                                    <SelectItem value="ee">rayimanoj963@gmail.com</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </form>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                <Button variant="outline">Cancel</Button>
-                <Button>Deploy</Button>
-            </CardFooter>
-        </Card>
+        <Router>
+            <UserProvider value={{username, setUsername}}>
+                <Toaster position="top-right" />
+                {username ? (
+                    <SidebarProvider>
+                        <AppSidebar variant="inset" />
+                        <SidebarInset className="!pl-0">
+                            <Routes>
+                                <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+                                <Route path="/products" element={<InvoiceTableProducts currentInvoices={currentInvoices} setSelectedInvoice={setCurrentInvoices} />} />
+                                <Route path="/services" element={<InvoiceTableServices currentInvoices={currentInvoices} setSelectedInvoice={setCurrentInvoices} />} />
+                                <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/" element={<AllInvoices currentInvoices={currentInvoices} setSelectedInvoice={setCurrentInvoices} />} />
+                            </Routes>
+                        </SidebarInset>
+                    </SidebarProvider>
+                ) : (
+                    <Routes>
+                        <Route path="/login" element={<LoginForm />} />
+                        <Route path="*" element={<Navigate to="/login" replace />} />
+                    </Routes>
+                )}
+            </UserProvider>
+        </Router>
     )
-
 }
-
-export default App
